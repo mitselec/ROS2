@@ -1,0 +1,16 @@
+services:
+  micro-ros-agent:
+    container_name: microros-agent
+    image: microros/micro-ros-agent:rolling
+    # host networking: the agent listens on 0.0.0.0:8888 and participates
+    # directly in the ROS 2 graph (DDS discovery via multicast)
+    network_mode: host
+    # --privileged + /dev mount only needed if you later switch to a
+    # serial/USB transport; harmless for UDP
+    privileged: true
+    volumes:
+      - /dev:/dev
+    # UDP transport: talk UDP to any LAN client; the Nucleo Kconfig
+    # (CONFIG_MICROROS_AGENT_IP/PORT) must point at this Pi's IP and port 8888
+    command: udp4 --port 8888 -v6
+    restart: unless-stopped

@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Application-based west manifest for the micro-ROS Nucleo demo.
+#
+#   west init -l <this folder>   (from inside the app folder)
+#   west update
+#
+# This pulls Zephyr together with everything it imports (CMSIS, STM32 HAL, etc.)
+# plus the micro-ROS Zephyr module.
+manifest:
+  projects:
+    - name: zephyr
+      url: https://github.com/zephyrproject-rtos/zephyr
+      revision: v4.1.0
+      import: true
+      west-commands: scripts/west-commands.yml
+
+    - name: micro_ros_zephyr_module
+      url: https://github.com/micro-ROS/micro_ros_zephyr_module
+      revision: kilted
+      path: modules/micro_ros_zephyr_module
+
+  self:
+    path: nucleo_f767zi_microros
+
