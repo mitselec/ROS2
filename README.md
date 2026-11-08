@@ -12,7 +12,7 @@ Two projects that talk to each other over **UDP on your LAN**:
 |  +-----------------+      +--------------------+ UDP:8888      |  | - subscribes /zephyr_led_cmd (Bool)     | |
 |                                                     |  via RJ45|  | - green LED blinks on every publish     | |
 +-----------------------------------------------------+          |  |  blue LED toggles on every received msg | |
-                                                                 | +-----------------------------------------+ |
+                                                                 |  +-----------------------------------------+ |
                                                                  +----------------------------------------------+
 ```
 
