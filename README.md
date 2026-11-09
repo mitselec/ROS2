@@ -2,19 +2,19 @@
 
 Two projects that talk to each other over **UDP on your LAN**:
 
-```
-+-----------------------------------------------------+          +----------------------------------------------+
-| Raspberry Pi 3B+ (Ubuntu/RPi OS, 64-bit)            |          | NUCLEO-F767ZI running Zephyr RTOS            |
-|                                                     |          |                                              |
-|  +-----------------+      +--------------------+    |          |  +-----------------------------------------+ |
-|  | ros2 CLI tools  | <--> | micro-ROS agent    |    |  Ethernet|  | micro-ROS node:                         | |
-|  | (ros2 topic *)  | DDS  | (Docker, UDP:8888) | <--+----------+-+ - publishes /zephyr_heartbeat (Int32)    | |
-|  +-----------------+      +--------------------+ UDP:8888      |  | - subscribes /zephyr_led_cmd (Bool)     | |
-|                                                     |  via RJ45|  | - green LED blinks on every publish     | |
-+-----------------------------------------------------+          |  |  blue LED toggles on every received msg | |
-                                                                 |  +-----------------------------------------+ |
-                                                                 +----------------------------------------------+
-                                                                 +----------------------------------------------+
+```mermaid
+flowchart LR
+    subgraph PI["Raspberry Pi 3B+ (ROS 2 side)"]
+        CLI["ros2 CLI tools<br/>(ros2 topic echo / pub)"]
+        AGENT["micro-ROS agent<br/>Docker container<br/>udp4, port 8888"]
+        CLI <-->|ROS 2 DDS<br/>same graph| AGENT
+    end
+
+    subgraph NUC["NUCLEO-F767ZI (Zephyr RTOS)"]
+        NODE["micro-ROS node<br/>publishes /zephyr_heartbeat (Int32)<br/>subscribes /zephyr_led_cmd (Bool)<br/>green LED blinks on each publish<br/>blue LED toggles on command"]
+    end
+
+    AGENT <-->|UDP 8888<br/>over Ethernet, RJ45| NODE
 ```
 
 | Folder | What it is |
@@ -45,3 +45,8 @@ Two projects that talk to each other over **UDP on your LAN**:
 - **Ethernet**: the Nucleo-144 F767ZI has an onboard RJ45 with PHY (RMII). Connect it to the same LAN as the Pi. PA7 (crs_dv) is used by Ethernet - don't repurpose the Arduino SPI MOSI at the same time.
 - **Silicon revision**: board rev. with SoC marking **cut-A** has known Ethernet instability in Zephyr (zephyrproject-rtos/zephyr#26519). Use a cut-Z/rev. Z part if you see flaky links.
 - ROS_DOMAIN_ID must match on both sides (default `0`).
+
+## License
+
+Apache-2.0 - see [LICENSE](LICENSE). This demo builds on the micro-ROS Zephyr module
+([micro-ROS/micro_ros_zephyr_module](https://github.com/micro-ROS/micro_ros_zephyr_module)), which is Apache-2.0 licensed as well.
