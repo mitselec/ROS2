@@ -1,0 +1,35 @@
+# --- west workspace (created by: west init -l . && west update) ---
+.west/
+modules/
+
+# --- Zephyr / CMake build output ---
+build/
+build-*/
+twister-out*/
+
+# Zephyr image artifacts in case they are kept outside build dirs
+*.elf
+*.hex
+*.bin
+*.uf2
+*.dfu
+
+# --- micro-ROS ExternalProject generated files ---
+modules/micro_ros_zephyr_module/modules/libmicroros/include/
+modules/micro_ros_zephyr_module/modules/libmicroros/libmicroros.a
+modules/micro_ros_zephyr_module/modules/libmicroros/configured_colcon.meta
+modules/micro_ros_zephyr_module/modules/libmicroros/zephyr_toolchain.cmake
+
+# --- Editors / IDE ---
+.vscode/
+.idea/
+*.swp
+*.user
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+
+# --- Python caches (colcon/west helpers) ---
+__pycache__/
+*.pyc
