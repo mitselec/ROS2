@@ -16,11 +16,24 @@ nucleo_f767zi_microros/
   |- CMakeLists.txt          # Zephyr application build script
   |- prj.conf                # Kconfig (micro-ROS, transport, networking)
   |- west.yml                # west manifest: pulls Zephyr v4.1.0 + micro-ROS module
+  |- microros_compat/        # include-path shim module (see note below)
   |- src/main.c              # demo application
 ```
 
 After `west init`/`west update`, the workspace contains `zephyr/`,
 `modules/libmicroros` deps of Zephyr and `modules/micro_ros_zephyr_module/`.
+
+### Why `microros_compat/` exists
+
+The micro-ROS module is registered manually via `ZEPHYR_EXTRA_MODULES`
+(its repo is not a west module itself - see `CMakeLists.txt`). Additionally,
+its UDP transport code still uses the pre-Zephyr-3.4 header style
+(`#include <posix/sys/socket.h>`), unchanged upstream since Dec 2022 in *all*
+`micro_ros_zephyr_module` branches (including `rolling`). The
+`microros_compat/` shim module restores compatibility on Zephyr >= 3.4 by
+adding `include/zephyr` to the include path - no module files are modified.
+Consider opening an issue/PR upstream if you read this in a year and the
+shim is still needed 🙂.
 
 ## Configuring the agent address
 
