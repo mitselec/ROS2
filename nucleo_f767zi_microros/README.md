@@ -103,6 +103,25 @@ runners also exist on this board).
 3. Reset the board. The console (ST-LINK VCP, USART3 @115200) prints agent/address info.
    A blinking green LED (LD1) means "publishing".
 
+## Downloading & flashing CI firmware (no local toolchain needed)
+
+Every run of the [CI workflow](https://github.com/mitselec/microros_nucleo_pi/actions/workflows/ci.yml)
+builds the firmware and attaches it as an artifact:
+
+1. Open the **Actions** tab, pick the latest green run on `main`.
+2. Scroll to **Artifacts** and download `nucleo_f767zi-microros-firmware`, unzip it.
+3. Flash over the board's ST-LINK USB with STM32CubeProgrammer:
+   ```powershell
+   STM32_Programmer_CLI -c port=SWD mode=NORMAL -w zephyr.hex -v -g
+   ```
+   or via the GUI: Connect (SWD) -> Open File -> `zephyr.hex` -> Download.
+
+**Caveat:** `CONFIG_MICROROS_AGENT_IP` in `nucleo_f767zi_microros/prj.conf` is baked into
+the firmware at build time. CI builds use whatever that file contains in the repo - so if
+you flash repo artifacts, make sure your Pi's IP matches it (or commit your known IP
+there). The app tolerates a "wrong" agent gracefully: it keeps printing
+`Waiting for the micro-ROS agent...` and connects as soon as it answers.
+
 ## Test from the Pi
 
 ```bash
