@@ -1,5 +1,7 @@
 # micro-ROS on Nucleo F767ZI (Zephyr) <-> ROS 2 on Raspberry Pi 3B+
 
+[![CI](https://github.com/mitselec/microros_nucleo_pi/actions/workflows/ci.yml/badge.svg)](https://github.com/mitselec/microros_nucleo_pi/actions/workflows/ci.yml)
+
 Two projects that talk to each other over **UDP on your LAN**:
 
 ```mermaid
@@ -21,6 +23,7 @@ flowchart LR
 |---|---|
 | `nucleo_f767zi_microros/` | Zephyr application + west manifest. Builds `micro_ros_zephyr_module`, uses the **UDP transport** over the board's built-in Ethernet with DHCP. |
 | `raspberry_pi_agent/` | ROS 2 side: the micro-ROS **agent** as a Docker service + instructions to inspect/drive topics with ros2 CLI. |
+| `.github/workflows/ci.yml` | GitHub Actions build of the Zephyr firmware on every push/PR; the flashed-ready `.hex/.bin/.elf` come out as a downloadable artifact. |
 
 ## Topics
 

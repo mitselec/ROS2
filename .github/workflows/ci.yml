@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-firmware:
+    name: Build Zephyr firmware (nucleo_f767zi)
+    runs-on: ubuntu-latest
+    container:
+      # Same image family used & tested by the micro-ROS Zephyr module
+      image: zephyrprojectrtos/zephyr-build:v0.26.17
+      options: --user root
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache west workspace
+        uses: actions/cache@v4
+        with:
+          path: |
+            .west
+            zephyr
+            modules
+          key: west-${{ runner.os }}-${{ hashFiles('nucleo_f767zi_microros/west.yml') }}
+          restore-keys: |
+            west-${{ runner.os }}-
+
+      - name: Install build prerequisites
+        run: |
+          pip3 install catkin_pkg lark-parser empy==3.3.4 colcon-common-extensions
+
+      - name: Initialize west workspace
+        run: |
+          if [ ! -d .west ]; then
+            west init -l nucleo_f767zi_microros
+          fi
+          west update
+
+      - name: Install Zephyr requirements
+        run: pip3 install -r zephyr/scripts/requirements.txt
+
+      - name: Select Zephyr SDK
+        run: |
+          echo "ZEPHYR_TOOLCHAIN_VARIANT=zephyr" >> "$GITHUB_ENV"
+          echo "ZEPHYR_SDK_INSTALL_DIR=$(ls -d /opt/toolchains/zephyr-sdk-* | tail -1)" >> "$GITHUB_ENV"
+
+      - name: Build firmware
+        run: west build -b nucleo_f767zi -p always nucleo_f767zi_microros
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nucleo_f767zi-microros-firmware
+          path: |
+            build/zephyr/*.hex
+            build/zephyr/*.bin
+            build/zephyr/*.elf
+          if-no-files-found: error
