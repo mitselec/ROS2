@@ -1,0 +1,7 @@
+# Zephyr module registration for the include-path compatibility shim.
+#
+# A real Zephyr module = this directory + a zephyr/module.yml telling Zephyr
+# what to load from it. This shim has no configuration options and only
+# adjusts compiler include paths, so no `kconfig:` entry is needed.
+build:
+  cmake: .
